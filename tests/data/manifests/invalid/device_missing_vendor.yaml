@@ -1,0 +1,9 @@
+schema_version: "1"
+project_name: no_vendor
+top: top
+tool:
+  synth:
+    kind: vivado
+device:
+  family: artix7
+  part: xc7a100t

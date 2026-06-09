@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aurig.dev/schema/manifest-v1.json",
+  "title": "AURIG Project Manifest v1",
+  "$comment": "Validation runs on the NORMALIZED + MERGED manifest: apply the .local overlay merge and the legacy-alias normalization (see migration table) BEFORE validating. This schema is canonical-only; legacy forms are normalized away first. Unknown keys are intentionally NOT rejected here (forward-compat); consumers SHOULD warn on unknown keys.",
+  "type": "object",
+  "required": ["schema_version", "project_name", "top"],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^1(\\.0)?(\\.0)?$", "$comment": "Canonical value is \"1\"; only the producer spellings \"1.0\"/\"1.0.0\" are also accepted and normalized to \"1\". Real future minors (e.g. \"1.2\") are rejected here." },
+    "project_name": { "type": "string", "minLength": 1 },
+    "project_root": { "type": "string", "default": "." },
+    "top": { "type": "string", "minLength": 1, "$comment": "top-level entity/module NAME, not a path" },
+    "top_file": { "type": "string", "$comment": "explicit path override when name->file is ambiguous" },
+    "require_exact_versions": { "type": "boolean", "default": true },
+    "debug_paths": { "type": "boolean", "default": false },
+
+    "tool": {
+      "type": "object",
+      "properties": {
+        "synth": {
+          "type": "object",
+          "required": ["kind"],
+          "properties": {
+            "kind": { "enum": ["vivado", "quartus", "diamond", "radiant"] },
+            "version": { "type": "string" },
+            "exe": { "type": "string" },
+            "env_script": { "$ref": "#/$defs/osPaths" },
+            "bin_dir": { "$ref": "#/$defs/osPaths" }
+          }
+        },
+        "sim": {
+          "type": "object",
+          "properties": {
+            "framework": { "enum": ["vunit", "direct"], "default": "direct" },
+            "kind": { "enum": ["ghdl", "nvc", "modelsim", "questa", "active-hdl", "xsim"] },
+            "version": { "type": "string" },
+            "exe": { "type": "string" },
+            "env_script": { "$ref": "#/$defs/osPaths" },
+            "bin_dir": { "$ref": "#/$defs/osPaths" },
+            "driver": { "type": "string", "$comment": "vunit only" }
+          },
+          "allOf": [
+            {
+              "$comment": "kind (engine) required unless framework is vunit",
+              "if": {
+                "not": {
+                  "properties": { "framework": { "const": "vunit" } },
+                  "required": ["framework"]
+                }
+              },
+              "then": { "required": ["kind"] }
+            }
+          ]
+        }
+      }
+    },
+
+    "device": {
+      "type": "object",
+      "required": ["vendor", "family", "part"],
+      "properties": {
+        "vendor": {
+          "enum": ["xilinx", "intel", "lattice", "microchip"],
+          "$comment": "altera->intel, microsemi->microchip normalized before validation; microchip has no core backend"
+        },
+        "family": { "type": "string", "minLength": 1, "$comment": "free-form; consumers normalize: lowercase + strip _/-/space" },
+        "part": { "type": "string", "minLength": 1, "$comment": "full part string, speed grade embedded" }
+      }
+    },
+
+    "board": {
+      "type": "object",
+      "properties": {
+        "xdc_files": { "$ref": "#/$defs/fileList" },
+        "sdc_files": { "$ref": "#/$defs/fileList" },
+        "lpf_files": { "$ref": "#/$defs/fileList" },
+        "pdc_files": { "$ref": "#/$defs/fileList" }
+      }
+    },
+
+    "generics": { "$ref": "#/$defs/generics", "$comment": "design top-level generics; base for sim.generics" },
+
+    "file_sets": {
+      "type": "object",
+      "properties": {
+        "rtl": { "type": "array", "items": { "$ref": "#/$defs/fileSetEntry" } },
+        "sim": { "type": "array", "items": { "$ref": "#/$defs/fileSetEntry" } }
+      }
+    },
+
+    "ip_cores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "src"],
+        "properties": {
+          "kind": { "enum": ["xci", "bd", "qip", "ipx", "lpc", "edf"] },
+          "src": { "type": "string", "minLength": 1, "$comment": "for kind=bd, .bd (checked-in) or .tcl (generator)" },
+          "generate": { "type": "boolean", "$comment": "default true for xci/bd, false otherwise; Diamond ignores" },
+          "lib": { "type": "string", "$comment": "edf only; default work" },
+          "module": { "type": "string", "$comment": "edf only" }
+        }
+      }
+    },
+
+    "external_libraries": {
+      "type": "object",
+      "$comment": "parser-class consumers only; build engines ignore. value: 'ignore' or a precompiled-library path",
+      "additionalProperties": { "type": "string" }
+    },
+
+    "sim": {
+      "type": "object",
+      "properties": {
+        "default_top_tb": { "type": "string", "$comment": "<lib>.<tb> or bare <tb>; override with --tb" },
+        "run_time": { "type": "string", "$comment": "backend-dependent; VUnit ignores" },
+        "generics": { "$ref": "#/$defs/generics", "$comment": "deep-merged over top-level generics" },
+        "waves": { "type": "string" },
+        "options": { "type": "string", "$comment": "engine-specific passthrough, not portable" }
+      }
+    },
+
+    "include_dirs_global": { "$ref": "#/$defs/fileList" },
+
+    "env": {
+      "type": "object",
+      "$comment": "OS environment variables only; generics live in generics/sim.generics",
+      "additionalProperties": { "type": "string" }
+    },
+
+    "quartus": {
+      "type": "object",
+      "properties": {
+        "qsf_extra": { "type": "array", "items": { "type": "string" } },
+        "qsf_extra_files": { "$ref": "#/$defs/fileList" }
+      }
+    }
+  },
+
+  "$defs": {
+    "osPaths": {
+      "type": "object",
+      "properties": {
+        "linux": { "type": "string" },
+        "windows": { "type": "string" }
+      }
+    },
+    "fileList": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "fileSetEntry": {
+      "type": "object",
+      "required": ["lib", "src"],
+      "properties": {
+        "lib": { "type": "string", "minLength": 1 },
+        "src": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "include": { "type": "array", "items": { "type": "string" } },
+        "vhdl_std": {
+          "oneOf": [
+            { "type": "string", "enum": ["1993", "2002", "2008", "2019"] },
+            { "type": "integer", "enum": [1993, 2002, 2008, 2019] }
+          ],
+          "default": "2008",
+          "$comment": "canonical written form is string; int accepted and coerced (permanent)"
+        }
+      }
+    },
+    "generics": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["string", "number", "integer", "boolean"]
+      }
+    }
+  }
+}

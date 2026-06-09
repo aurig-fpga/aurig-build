@@ -1,0 +1,18 @@
+schema_version: "1"
+project_name: sim_direct
+top: dut_top
+tool:
+  synth:
+    kind: diamond
+  sim:
+    framework: direct
+    kind: questa
+    exe: vsim
+device:
+  vendor: lattice
+  family: ecp5
+  part: LFE5U-85F-6BG381C
+sim:
+  default_top_tb: tb.dut_tb
+  generics:
+    SEED: 42

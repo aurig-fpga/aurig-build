@@ -1,0 +1,137 @@
+# ============================================================================
+# Python
+# ============================================================================
+
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.hypothesis/
+.tox/
+
+# Type checking
+.mypy_cache/
+.pytype/
+.dmypy.json
+
+# Linting
+.ruff_cache/
+
+# ============================================================================
+# IDEs and Editors
+# ============================================================================
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm / IntelliJ
+.idea/
+
+# ============================================================================
+# Per-machine config overlays
+# ============================================================================
+
+# Per-developer / per-machine YAML overrides — see README "Per-machine overlay".
+# These sit next to a committed config (e.g. config/project.local.yaml next
+# to project.yaml) and contain Vivado install paths, version pins, env_script
+# locations, etc. that must not leak into git. Both .yaml and .yml suffixes
+# are supported (suffix follows the base config).
+*.local.yaml
+*.local.yml
+
+# Generated merged config (committed_yaml + overlay) used as the cfg path
+# downstream TCL backends read. The file is auto-cleaned at process exit;
+# the pattern catches stragglers if the run crashes between mkstemp and
+# atexit. Both suffixes covered for parity with the overlay patterns above.
+.*.merged.*.yaml
+.*.merged.*.yml
+
+# ============================================================================
+# Smoke-test machine-local vendor configuration
+# ============================================================================
+# tests/smoke/local_config.yaml: per-machine env_script/bin_dir/version for
+# each FPGA vendor toolchain. Each developer keeps their own; never commit.
+# See tests/smoke/local_config.example.yaml for the schema.
+tests/smoke/local_config.yaml
+
+# ============================================================================
+# FPGA Build Artifacts (aurig-build-specific)
+# ============================================================================
+
+# Implementation outputs (created by vivado/quartus/diamond)
+impl/
+
+# Smoke test build artifacts
+tests/data/*/impl/
+
+# Vendor-specific project files and logs
+*.xpr
+*.jou
+*.log
+*.rpt
+*.dcp
+*.bit
+*.bin
+*.mcs
+*.prm
+
+# Vivado
+.Xil/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+
+# Quartus
+*.qpf
+*.qsf
+*.qws
+*.qtl
+output_files/
+db/
+incremental_db/
+
+# Diamond/Lattice
+*.ldf
+*.sty
+*.rva
+*.rvl
+
+# Simulation artifacts
+*.wdb
+*.vcd
+*.ghw
+transcript
+vsim.wlf
+work/
+
+.claude/
+
+
+# AURIG transition: agent workflow files, not for public repo
+STATUS.md
+
+# Internal staging documents, not for public repo
+BRIEF.md
+MIGRATION.md

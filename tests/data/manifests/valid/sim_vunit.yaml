@@ -1,0 +1,21 @@
+schema_version: "1"
+project_name: sim_vunit
+top: dut_top
+tool:
+  synth:
+    kind: quartus
+  sim:
+    framework: vunit
+device:
+  vendor: intel
+  family: max10
+  part: 10M50DAF484C7G
+file_sets:
+  rtl:
+    - lib: work
+      src:
+        - src/dut.vhd
+  sim:
+    - lib: tb
+      src:
+        - tb/dut_tb.vhd

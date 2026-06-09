@@ -1,0 +1,16 @@
+schema_version: "1"
+project_name: vhdl_int
+top: top
+tool:
+  synth:
+    kind: radiant
+device:
+  vendor: lattice
+  family: nexus
+  part: LIFCL-40-9BG400C
+file_sets:
+  rtl:
+    - lib: work
+      vhdl_std: 2008
+      src:
+        - src/top.vhd

@@ -1,0 +1,27 @@
+schema_version: "1"
+project_name: with_ip
+top: top
+tool:
+  synth:
+    kind: vivado
+device:
+  vendor: xilinx
+  family: artix7
+  part: xc7a100t-1csg324
+ip_cores:
+  - kind: xci
+    src: ip/clk_wiz.xci
+    generate: true
+  - kind: edf
+    src: ip/netlist.edf
+    lib: work
+    module: crypto_core
+external_libraries:
+  unisim: ignore
+  mylib: /opt/precompiled/mylib
+file_sets:
+  rtl:
+    - lib: work
+      vhdl_std: "2019"
+      src:
+        - src/top.vhd

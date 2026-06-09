@@ -1,0 +1,62 @@
+# ============================================================================
+# aurig-build Minimal Diamond Smoke Test Project Configuration
+# ============================================================================
+#
+# Minimal working configuration for smoke testing the aurig-build -> Diamond
+# build flow. Targets a small ECP5 device with a simple blinky design.
+#
+
+schema_version: "1"
+project_name: diamond_min_demo
+project_root: ".."
+top: demo_top
+
+# ----------------------------------------------------------------------------
+# Tool Configuration
+# ----------------------------------------------------------------------------
+tool:
+  synth:
+    kind: diamond
+    version: "3.14"
+    exe: pnmainc
+    env_script:
+      linux: /opt/lscc/diamond/3.14/diamond_env.sh
+      windows: ""
+    bin_dir:
+      linux: ""
+      windows: "C:/lscc/diamond/3.14/bin/nt64"
+
+# ----------------------------------------------------------------------------
+# Device Configuration
+# ----------------------------------------------------------------------------
+device:
+  vendor: lattice
+  family: ecp5u
+  part: LFE5U-25F-6BG256I
+
+# ----------------------------------------------------------------------------
+# Board Constraints
+# ----------------------------------------------------------------------------
+board:
+  lpf_files:
+    - constraints/demo.lpf
+
+# ----------------------------------------------------------------------------
+# File Sets
+# ----------------------------------------------------------------------------
+file_sets:
+  rtl:
+    - lib: work
+      vhdl_std: 2008
+      src:
+        - src/demo_top.vhd
+
+# ----------------------------------------------------------------------------
+# Global Include Directories
+# ----------------------------------------------------------------------------
+include_dirs_global: []
+
+# ----------------------------------------------------------------------------
+# IP Cores
+# ----------------------------------------------------------------------------
+ip_cores: []

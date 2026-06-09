@@ -1,0 +1,30 @@
+schema_version: "1"
+project_name: vivado_full
+project_root: ../..
+top: demo_top
+require_exact_versions: false
+tool:
+  synth:
+    kind: vivado
+    version: "2023.1"
+    exe: vivado
+    env_script:
+      linux: /opt/Xilinx/Vivado/2023.1/settings64.sh
+      windows: C:/Xilinx/Vivado/2023.1/settings64.bat
+device:
+  vendor: xilinx
+  family: artix7
+  part: xc7a100t-1csg324
+board:
+  xdc_files:
+    - constraints/pins.xdc
+generics:
+  WIDTH: 8
+  ENABLE: true
+file_sets:
+  rtl:
+    - lib: work
+      vhdl_std: "2008"
+      src:
+        - src/demo_top.vhd
+include_dirs_global: []

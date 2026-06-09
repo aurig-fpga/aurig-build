@@ -1,0 +1,57 @@
+# ============================================================================
+# aurig-build Minimal Radiant Smoke Test Project Configuration
+# ============================================================================
+#
+# Minimal working configuration for smoke testing the aurig-build -> Radiant
+# build flow. Targets a small Nexus device with a simple blinky design.
+#
+
+schema_version: "1"
+project_name: radiant_min_demo
+project_root: ".."
+top: demo_top
+
+# ----------------------------------------------------------------------------
+# Tool Configuration
+# ----------------------------------------------------------------------------
+tool:
+  synth:
+    kind: radiant
+    version: "2024.1"
+    exe: radiantc
+    env_script:
+      linux: /opt/lscc/radiant/2024.1/bin/lin64/radiant_env.sh
+      windows: ""
+    bin_dir:
+      linux: ""
+      windows: "C:/lscc/radiant/2024.1/bin/nt64"
+
+# ----------------------------------------------------------------------------
+# Device Configuration
+# ----------------------------------------------------------------------------
+device:
+  vendor: lattice
+  family: nexus
+  part: LIFCL-40-9BG400C
+
+# ----------------------------------------------------------------------------
+# Board Constraints
+# ----------------------------------------------------------------------------
+board:
+  pdc_files:
+    - constraints/demo.pdc
+
+# ----------------------------------------------------------------------------
+# File Sets
+# ----------------------------------------------------------------------------
+file_sets:
+  rtl:
+    - lib: work
+      vhdl_std: 2008
+      src:
+        - src/demo_top.vhd
+
+# ----------------------------------------------------------------------------
+# Global Include Directories
+# ----------------------------------------------------------------------------
+include_dirs_global: []

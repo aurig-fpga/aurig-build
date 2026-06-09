@@ -1,0 +1,3 @@
+schema_version: "1"
+project_name: minimal
+top: top_entity

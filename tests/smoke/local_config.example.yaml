@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2024-2026 LogiMentor S.r.l.
+
+# Per-machine smoke-test vendor configuration. Copy this file to
+# `tests/smoke/local_config.yaml` (gitignored) and edit the paths to match
+# the installations on your machine. The smoke tests will skip any vendor
+# whose entry is missing here, so you can opt in to only the tools you have.
+#
+# Each vendor entry MUST be a mapping with these keys (all string-valued):
+#   env_script  — absolute path to the env-setup batch/script (Windows .bat
+#                 or Linux .sh). Optional: omit if the tool lives entirely
+#                 in `bin_dir` and needs no env initialization (Diamond on
+#                 Windows is a known example — pnmainc.exe is self-sufficient).
+#   bin_dir     — absolute path to the directory that contains the vendor
+#                 executable (e.g. C:/Xilinx/Vivado/2023.1/bin).
+#   version     — version string the YAML config will declare and aurig-build
+#                 will verify at runtime (vivado: "YYYY.N", quartus: "YY.N",
+#                 diamond: "X.YY", radiant: "YYYY.N").
+
+vivado:
+  env_script: C:/Xilinx/Vivado/2023.1/settings64.bat
+  bin_dir: C:/Xilinx/Vivado/2023.1/bin
+  version: "2023.1"
+
+quartus:
+  # env_script is optional; if quartus_sh + the license env vars work
+  # without sourcing a wrapper, omit env_script and just point bin_dir.
+  bin_dir: C:/intelFPGA_lite/23.1std/quartus/bin64
+  version: "23.1"
+
+diamond:
+  # Diamond 3.x on Windows: no env_script.bat ships with the installer;
+  # pnmainc/diamondc in bin/nt64 work directly once LATTICE_LICENSE_FILE
+  # is set in the user environment.
+  bin_dir: C:/lscc/diamond/3.14/bin/nt64
+  version: "3.14"
+
+# Radiant entry would go here if/when the smoke test lands.
+# radiant:
+#   env_script: C:/lscc/radiant/2024.1/bin/nt64/radiant_env.bat
+#   bin_dir: C:/lscc/radiant/2024.1/bin/nt64
+#   version: "2024.1"

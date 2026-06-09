@@ -1,0 +1,3 @@
+schema_version: "1.0"
+project_name: dotted_version
+top: top_entity

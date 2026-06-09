@@ -1,0 +1,18 @@
+################################################################################
+# demo.lpf
+# Minimal Lattice Preference File for aurig-build smoke testing
+# Target: Lattice ECP5 (LFE5U-25F-6BG256I)
+################################################################################
+
+BLOCK RESETPATHS;
+BLOCK ASYNCPATHS;
+
+# Clock constraint: 50 MHz
+FREQUENCY PORT "clk" 50.000000 MHz;
+
+# Pin assignments (example sites for caBGA256)
+LOCATE COMP "clk" SITE "A9";
+IOBUF PORT "clk" IO_TYPE=LVCMOS33;
+
+LOCATE COMP "led" SITE "B9";
+IOBUF PORT "led" IO_TYPE=LVCMOS33;

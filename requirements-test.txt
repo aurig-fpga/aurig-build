@@ -1,0 +1,12 @@
+# aurig-build Test Dependencies
+#
+# Install with: pip install -r requirements-test.txt
+#
+# These are the ONLY additional dependencies for testing.
+# The main aurig_build.run module only requires PyYAML; jsonschema is a
+# test-only oracle for the schema conformance suite (the runtime uses an
+# in-tree hand-rolled validator instead).
+
+pytest>=6.0
+PyYAML>=5.1
+jsonschema>=4.0

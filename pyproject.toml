@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "aurig-build"
+version = "0.1.0"
+description = "FPGA project automation: one YAML drives synthesis and simulation across Vivado, Quartus, Diamond and Radiant."
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "LogiMentor S.r.l." }]
+dependencies = ["PyYAML>=5.1"]
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=6.0", "PyYAML>=5.1"]
+
+[project.scripts]
+aurig-build = "aurig_build.run:main"
+
+[project.urls]
+Homepage = "https://github.com/aurig-fpga/aurig-build"
+Repository = "https://github.com/aurig-fpga/aurig-build"
+Issues = "https://github.com/aurig-fpga/aurig-build/issues"
+Changelog = "https://github.com/aurig-fpga/aurig-build/blob/main/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["aurig_build"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"aurig_build/schema/manifest-v1.json" = "aurig_build/schema/manifest-v1.json"

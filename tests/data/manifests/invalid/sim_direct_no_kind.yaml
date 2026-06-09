@@ -1,0 +1,12 @@
+schema_version: "1"
+project_name: sim_no_kind
+top: top
+tool:
+  synth:
+    kind: vivado
+  sim:
+    framework: direct
+device:
+  vendor: xilinx
+  family: artix7
+  part: xc7a100t

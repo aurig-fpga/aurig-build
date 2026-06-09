@@ -1,0 +1,13 @@
+schema_version: "1"
+project_name: bad_fileset
+top: top
+tool:
+  synth:
+    kind: vivado
+device:
+  vendor: xilinx
+  family: artix7
+  part: xc7a100t
+file_sets:
+  rtl:
+    - lib: work

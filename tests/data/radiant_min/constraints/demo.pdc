@@ -1,0 +1,15 @@
+################################################################################
+# demo.pdc
+# Minimal Physical Design Constraints for aurig-build smoke testing
+# Target: Lattice Nexus (LIFCL-40-9BG400C)
+################################################################################
+
+# Clock constraint: 50 MHz
+create_clock -name sys_clk -period 20.000 [get_ports clk]
+
+# Pin assignments (example sites for caBGA400)
+ldc_set_location -site {A9} [get_ports clk]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS33} [get_ports clk]
+
+ldc_set_location -site {B9} [get_ports led]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS33} [get_ports led]

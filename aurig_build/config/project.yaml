@@ -1,0 +1,350 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2024-2026 LogiMentor S.r.l.
+
+# ============================================================================
+# aurig-build Project Configuration — Canonical Template
+# ============================================================================
+#
+# This file serves as both:
+#   1. A working default configuration (Xilinx Vivado / Artix-7)
+#   2. A complete reference showing ALL supported features
+#
+# SECTIONS (in order):
+#   - Project metadata
+#   - Tool configuration (synth + sim roles)
+#   - Device/board (target FPGA)
+#   - Features (block design, etc.)
+#   - Simulation settings
+#   - File sets (RTL + simulation sources)
+#   - IP cores (XCI, BD, IPX, QIP, EDIF, netlists)
+#   - Global includes
+#   - Environment variables
+#   - Vendor-specific (Quartus QSF extras)
+#
+# NOTATION:
+#   - Active settings use the default Xilinx Vivado / Artix-7 configuration
+#   - Alternative vendor/tool configs are COMMENTED with section labels
+#   - All values are realistic examples (not placeholder "???" text)
+#
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# PROJECT METADATA
+# ----------------------------------------------------------------------------
+schema_version: "1"               # Manifest schema version (canonical v1)
+project_name: demo_project        # Logical project name (used in build dirs)
+project_root: ../..               # Path to project root, relative to THIS file
+                                  # Default: parent of config folder (e.g., aurig_build/config/..)
+                                  # Supports absolute paths or relative to THIS YAML
+top: demo_top                     # Top-level VHDL entity or Verilog module name
+
+require_exact_versions: false     # Version policy:
+                                  #   true  = FAIL if tool version mismatches
+                                  #   false = WARN only (default)
+
+debug_paths: false                # Enable verbose path resolution logging
+                                  # Useful for troubleshooting file discovery issues
+                                  # (toggled only via this YAML key)
+
+# ----------------------------------------------------------------------------
+# TOOL CONFIGURATION
+# ----------------------------------------------------------------------------
+# Two independent roles:
+#   synth - Handles synthesis, implementation, bitstream (all build targets)
+#   sim   - Handles simulation only
+#
+# LIMITATION: Cannot configure separate synthesis + implementation tools
+#             (e.g., Synplify Pro → Diamond P&R). The same tool must handle
+#             the complete build flow. For mixed-tool flows, run synthesis
+#             externally and import the netlist.
+# ----------------------------------------------------------------------------
+
+tool:
+  synth:
+    # === XILINX VIVADO (default, ACTIVE) ===
+    kind: vivado                  # Options: vivado | quartus | diamond
+    version: "2023.1"             # Checked at runtime; format: YYYY.N
+    exe: vivado                   # Executable name (defaults to 'kind' if omitted)
+    env_script:                   # OS-specific environment setup scripts
+      linux: /opt/Xilinx/Vivado/2023.1/settings64.sh
+      windows: C:/Xilinx/Vivado/2023.1/settings64.bat
+    bin_dir:                      # Optional: explicit bin directory
+      linux: /opt/Xilinx/Vivado/2023.1/bin
+      windows: C:/Xilinx/Vivado/2023.1/bin
+
+    # --- Intel Quartus alternative (COMMENTED) ---
+    # kind: quartus
+    # version: "23.1"             # Format: YY.N or YY.N.N
+    # exe: quartus_sh             # Quartus shell interface
+    # env_script:
+    #   linux: /opt/intelFPGA/23.1/quartus/adm/qenv.sh
+    #   windows: C:/intelFPGA_lite/23.1/quartus/adm/qenv.bat
+    # bin_dir:
+    #   linux: /opt/intelFPGA/23.1/quartus/bin
+    #   windows: C:/intelFPGA_lite/23.1/quartus/bin64
+
+    # --- Lattice Diamond alternative (COMMENTED) ---
+    # kind: diamond
+    # version: "3.13"             # Format: X.YZ
+    # exe: diamondc               # Or 'pnmainc' for command-line
+    # env_script:
+    #   linux: /opt/lscc/diamond/3.13/bin/lin64/diamond_env.sh
+    #   windows: C:/lscc/diamond/3.13/bin/nt64/diamond_env.bat
+    # bin_dir:
+    #   linux: /opt/lscc/diamond/3.13/bin/lin64
+    #   windows: C:/lscc/diamond/3.13/bin/nt64
+
+  # === SIMULATION TOOL (optional, COMMENTED by default) ===
+  # Uncomment and configure ONE of: vunit | questa | xsim
+  # sim:
+  #   # --- VUnit (Python test framework) ---
+  #   kind: vunit
+  #   version: ""                 # Version not checked for VUnit
+  #   exe: python                 # Python interpreter
+  #   # No env_script needed - uses Python environment
+
+  #   # --- Mentor Questa/ModelSim alternative ---
+  #   # kind: questa
+  #   # version: "2023.2"         # Format: YYYY.N
+  #   # exe: vsim
+  #   # env_script:
+  #   #   linux: /opt/mentor/questa/2023.2/settings.sh
+  #   #   windows: C:/mentor/questa/2023.2/settings.bat
+  #   # bin_dir:
+  #   #   linux: /opt/mentor/questa/2023.2/bin
+  #   #   windows: C:/questasim64_2023.2/win64
+
+  #   # --- Xilinx XSim alternative (shares Vivado environment) ---
+  #   # kind: xsim
+  #   # version: "2023.1"         # Uses Vivado version
+  #   # exe: vivado               # Runs via 'vivado -mode tcl'
+  #   # env_script:
+  #   #   linux: /opt/Xilinx/Vivado/2023.1/settings64.sh
+  #   #   windows: C:/Xilinx/Vivado/2023.1/settings64.bat
+
+# ----------------------------------------------------------------------------
+# DEVICE CONFIGURATION
+# ----------------------------------------------------------------------------
+device:
+  # === XILINX (default, ACTIVE) ===
+  vendor: xilinx                  # Options: xilinx | intel | lattice
+  family: artix7                  # Xilinx families: artix7, kintex7, zynq, zynquplus, etc.
+  part: xc7a100t-1csg324          # Full part: device-speed_grade-package
+
+  # --- Intel/Altera alternative (COMMENTED) ---
+  # vendor: intel
+  # family: max10                 # Intel families: max10, cyclonev, arriav, etc.
+  # part: 10M50DAF484C7G          # Example MAX 10 device
+
+  # --- Lattice alternative (COMMENTED) ---
+  # vendor: lattice
+  # family: ecp5                  # Lattice families: ecp5, ice40, machxo2, etc.
+  # part: LFE5U-85F-6BG381C       # Example ECP5 device
+
+# ----------------------------------------------------------------------------
+# BOARD CONSTRAINTS
+# ----------------------------------------------------------------------------
+# Vendor-specific constraint files for pin assignments and timing.
+# Order matters: base clocks before derived clocks.
+# ----------------------------------------------------------------------------
+board:
+  # === XILINX XDC (default, ACTIVE) ===
+  xdc_files:                      # Xilinx Design Constraints (Vivado)
+    - constraints/xilinx/demo_board/pins.xdc
+    - constraints/xilinx/demo_board/timing.xdc
+
+  # --- Intel SDC alternative (COMMENTED) ---
+  # sdc_files:                    # Synopsys Design Constraints (Quartus)
+  #   - constraints/intel/demo_board/timing.sdc
+  # NOTE: Pin assignments for Quartus typically go in 'quartus.qsf_extra'
+  #       or 'quartus.qsf_extra_files' (see section below)
+
+  # --- Lattice LPF/SDC alternative (COMMENTED) ---
+  # Diamond uses:
+  # sdc_files:                    # Timing constraints
+  #   - constraints/lattice/timing.sdc
+  # lpf_files:                    # Lattice Preference Files (pin assignments)
+  #   - constraints/lattice/pins.lpf
+
+# ----------------------------------------------------------------------------
+# FEATURES (optional block design, etc.)
+# ----------------------------------------------------------------------------
+# features:
+#   block_design:                 # Vivado IP Integrator block design
+#     enabled: false              # Set true to enable
+#     tcl: ip/bd/design_bd.tcl    # TCL script to create the block design
+
+# ----------------------------------------------------------------------------
+# SIMULATION SETTINGS (optional)
+# ----------------------------------------------------------------------------
+# Used only when running 'target: sim'
+# ----------------------------------------------------------------------------
+# sim:
+#   default_top_tb: tb_demo_top   # Default testbench entity/module
+#                                 # Can be overridden with --tb flag
+#   
+#   run_time: 10 ms               # Simulation duration (tool-specific format)
+#   
+#   generics:                     # VHDL generics / Verilog parameters
+#     G_SEED: 42                  # Passed to simulator at runtime
+#     G_TIMEOUT_CYC: 100000
+#     G_CLK_PERIOD: 10.0
+#   
+#   waves: waves/demo_top.do      # Wave configuration file
+#                                 # Questa: .do | Vivado: .wcfg
+
+# ----------------------------------------------------------------------------
+# FILE SETS (source organization)
+# ----------------------------------------------------------------------------
+# Organize HDL sources into logical groups (libraries).
+# Each item has:
+#   lib       - VHDL library name (required)
+#   vhdl_std  - VHDL standard: 1993 | 2002 | 2008 (optional, default: 2008)
+#   src       - List of file glob patterns (required)
+#   include   - List of include directories for Verilog/SV (optional)
+#
+# Files compiled in order; libraries must be defined before use.
+# Glob patterns evaluated relative to project_root.
+# ----------------------------------------------------------------------------
+file_sets:
+  rtl:                            # RTL (synthesis) sources
+    # === Primary design library (ACTIVE) ===
+    - lib: work
+      vhdl_std: "2008"            # Note: Quartus has limited 2002 support
+      src:
+        - src/common/**/*.vhd
+        - src/demo_top.vhd
+      include:
+        - src/common/include
+
+    # --- Additional libraries (COMMENTED) ---
+    # Multi-library example showing typical project organization
+
+    # - lib: util
+    #   vhdl_std: 2008
+    #   src:
+    #     - lib/util/**/*.vhd
+    #   include:
+    #     - lib/util/include
+
+    # - lib: math
+    #   vhdl_std: 2008
+    #   src:
+    #     - lib/math/**/*.vhd
+    #     - lib/math/**/*.vhdl   # Alternative VHDL extension
+    #   include:
+    #     - lib/math/include
+
+    # - lib: filters
+    #   vhdl_std: 2008
+    #   src:
+    #     - lib/filters/**/*.vhd
+
+  # === Simulation sources (COMMENTED) ===
+  # Separate library for testbenches and simulation models
+  # sim:
+  #   - lib: tb
+  #     vhdl_std: 2008
+  #     src:
+  #       - sim/testbenches/**/*.vhd
+  #     include:
+  #       - sim/testbenches/include
+  #   
+  #   - lib: simlib
+  #     vhdl_std: 2008
+  #     src:
+  #       - sim/models/**/*.vhd
+  #       - sim/bfm/**/*.vhd      # Bus functional models
+
+# ----------------------------------------------------------------------------
+# IP CORES (vendor IP and netlists)
+# ----------------------------------------------------------------------------
+# Declare vendor IP cores, block designs, and pre-built netlists.
+# Each entry has:
+#   kind      - IP type (required): xci | bd | ipx | lpc | qip | edf
+#   src       - Path relative to project_root (required)
+#   lib       - VHDL library for netlists (optional, default: work)
+#   generate  - Run generate_target (optional, default: true for xci/bd)
+#   module    - Override module/entity name if different from filename (optional)
+#
+# Vendor compatibility:
+#   xci       - Vivado IP catalog core (.xci)
+#   bd        - Vivado block design (.bd)
+  #   ipx       - Diamond IPexpress descriptor (.ipx)
+#   lpc       - Diamond legacy IP (.lpc)
+#   qip       - Quartus IP variation (.qip)
+#   edf       - EDIF netlist (vendor-agnostic black box)
+#
+# NOTE: Cross-vendor usage will generate warnings but not fail.
+# ----------------------------------------------------------------------------
+ip_cores:
+  # === XILINX VIVADO IP (ACTIVE) ===
+  - kind: xci
+    src: ip/clk_wiz/clk_wiz.xci   # Clock wizard IP
+    generate: true                # Run generate_target all
+
+  # --- Additional Vivado IP examples (COMMENTED) ---
+  # - kind: bd
+  #   src: ip/bd/design_bd.bd
+  #   generate: true
+
+  # - kind: xci
+  #   src: ip/fifo/async_fifo.xci
+  #   generate: true
+
+  # --- Lattice Diamond IP (COMMENTED) ---
+  # - kind: ipx
+  #   src: ip/pll/my_pll.ipx      # IPexpress generated PLL
+
+  # - kind: lpc
+  #   src: ip/fifo/my_fifo.lpc    # Legacy Diamond IP
+
+  # --- Intel Quartus IP (COMMENTED) ---
+  # - kind: qip
+  #   src: ip/fifo/fifo_gen.qip   # Quartus IP variation file
+
+  # --- Vendor-agnostic netlists (COMMENTED) ---
+  # - kind: edf
+  #   src: ip/macro/crypto_core.edf
+  #   lib: work                   # Target library for netlist
+  #   module: crypto_aes_top      # Override entity/module name
+
+# ----------------------------------------------------------------------------
+# GLOBAL INCLUDE DIRECTORIES
+# ----------------------------------------------------------------------------
+# Applied across ALL compiles for all libraries.
+# Use sparingly; prefer per-library includes in file_sets.
+# ----------------------------------------------------------------------------
+include_dirs_global:
+  - src/common/include
+  - third_party/include
+
+# ----------------------------------------------------------------------------
+# ENVIRONMENT VARIABLES
+# ----------------------------------------------------------------------------
+# Custom environment variables passed to tool subprocesses.
+# Rarely needed; most configuration should be in tool.* sections.
+# ----------------------------------------------------------------------------
+# env:
+#   MY_TOOL_VAR: some_value       # custom environment variables for tool subprocesses, if needed
+
+# ----------------------------------------------------------------------------
+# QUARTUS-SPECIFIC SETTINGS
+# ----------------------------------------------------------------------------
+# Additional QSF assignments for Intel Quartus projects.
+# Ignored by other tools.
+# ----------------------------------------------------------------------------
+# quartus:
+#   qsf_extra:                    # TCL one-liners appended to generated .qsf
+#     - set_global_assignment -name OPTIMIZATION_TECHNIQUE BALANCED
+#     - set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
+#     - set_location_assignment PIN_E3 -to clk_in
+#     - set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to clk_in
+#   
+#   qsf_extra_files:              # External .qsf files to concatenate
+#     - constraints/quartus/pins.qsf
+#     - constraints/quartus/optimization.qsf
+
+# ============================================================================
+# END OF CONFIGURATION
+# ============================================================================

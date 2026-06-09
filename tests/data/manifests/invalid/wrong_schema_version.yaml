@@ -1,0 +1,10 @@
+schema_version: "2"
+project_name: wrong_version
+top: top
+tool:
+  synth:
+    kind: vivado
+device:
+  vendor: xilinx
+  family: artix7
+  part: xc7a100t

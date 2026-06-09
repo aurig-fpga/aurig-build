@@ -1,0 +1,54 @@
+# ============================================================================
+# aurig-build Minimal Quartus Smoke Test Project Configuration
+# ============================================================================
+#
+# Minimal working configuration for smoke testing the aurig-build -> Quartus
+# build flow. Targets a small Cyclone 10 LP device with a simple blinky design.
+#
+
+schema_version: "1"
+project_name: quartus_min_demo
+project_root: ".."
+top: demo_top
+
+# ----------------------------------------------------------------------------
+# Tool Configuration
+# ----------------------------------------------------------------------------
+tool:
+  synth:
+    kind: quartus
+    version: "23.1"
+    exe: quartus_sh
+    env_script:
+      linux: /opt/intelFPGA/23.1/quartus/adm/qenv.sh
+      windows: C:/intelFPGA/23.1/quartus/adm/qenv.bat
+
+# ----------------------------------------------------------------------------
+# Device Configuration
+# ----------------------------------------------------------------------------
+device:
+  vendor: intel
+  family: cyclone10lp
+  part: 10CL025YU256C8G
+
+# ----------------------------------------------------------------------------
+# Board Constraints
+# ----------------------------------------------------------------------------
+board:
+  sdc_files:
+    - constraints/demo.sdc
+
+# ----------------------------------------------------------------------------
+# File Sets
+# ----------------------------------------------------------------------------
+file_sets:
+  rtl:
+    - lib: work
+      vhdl_std: 2008
+      src:
+        - src/demo_top.vhd
+
+# ----------------------------------------------------------------------------
+# Global Include Directories
+# ----------------------------------------------------------------------------
+include_dirs_global: []
