@@ -182,14 +182,14 @@ board:
 # sim:
 #   default_top_tb: tb_demo_top   # Default testbench entity/module
 #                                 # Can be overridden with --tb flag
-#   
+#
 #   run_time: 10 ms               # Simulation duration (tool-specific format)
-#   
+#
 #   generics:                     # VHDL generics / Verilog parameters
 #     G_SEED: 42                  # Passed to simulator at runtime
 #     G_TIMEOUT_CYC: 100000
 #     G_CLK_PERIOD: 10.0
-#   
+#
 #   waves: waves/demo_top.do      # Wave configuration file
 #                                 # Questa: .do | Vivado: .wcfg
 
@@ -249,7 +249,7 @@ file_sets:
   #       - sim/testbenches/**/*.vhd
   #     include:
   #       - sim/testbenches/include
-  #   
+  #
   #   - lib: simlib
   #     vhdl_std: 2008
   #     src:
@@ -340,7 +340,7 @@ include_dirs_global:
 #     - set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
 #     - set_location_assignment PIN_E3 -to clk_in
 #     - set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to clk_in
-#   
+#
 #   qsf_extra_files:              # External .qsf files to concatenate
 #     - constraints/quartus/pins.qsf
 #     - constraints/quartus/optimization.qsf

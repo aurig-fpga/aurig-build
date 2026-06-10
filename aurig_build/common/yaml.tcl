@@ -202,24 +202,24 @@ proc ::lm::yaml::parse_ip_cores {lines start_i parent_indent} {
     set cores {}
     set i $start_i
     set n [llength $lines]
-    
+
     while {$i < $n} {
         set line [lindex $lines $i]
         if {[string trim $line] eq ""} { incr i; continue }
         set ind [::lm::yaml::indent_of $line]
         if {$ind <= $parent_indent} { break }
         set trimmed [string trimleft $line]
-        
+
         # Item: "- ..."
         if {[regexp {^- } $trimmed]} {
             set item {}
             set afterDash [string trim [string range $trimmed 1 end]]
-            
+
             # Case: single "key: value" on dash line
             if {$afterDash ne "" && [regexp {^([A-Za-z0-9_]+):\s*(.*)$} $afterDash -> k v]} {
                 dict set item $k [string trim $v]
             }
-            
+
             # Now consume indented fields of this item
             set item_parent_indent [::lm::yaml::indent_of $line]
             incr i
@@ -229,7 +229,7 @@ proc ::lm::yaml::parse_ip_cores {lines start_i parent_indent} {
                 set lind [::lm::yaml::indent_of $l]
                 if {$lind <= $item_parent_indent} { break }
                 set t [string trimleft $l]
-                
+
                 if {[regexp {^([A-Za-z0-9_]+):\s*(.*)$} $t -> k v]} {
                     dict set item $k [string trim $v]
                     incr i
@@ -238,11 +238,11 @@ proc ::lm::yaml::parse_ip_cores {lines start_i parent_indent} {
                     break
                 }
             }
-            
+
             lappend cores $item
             continue
         }
-        
+
         break
     }
     return [list $cores $i]
@@ -503,7 +503,7 @@ proc ::lm::yaml::get_ip_cores {Y} {
         return $cores
     }
     set raw_cores [dict get $Y ip_cores]
-    
+
     foreach item $raw_cores {
         # Validate dict-ness
         if {[catch {dict size $item}]} {
@@ -518,7 +518,7 @@ proc ::lm::yaml::get_ip_cores {Y} {
             puts "WARN: ip_cores item missing 'src'; skipping"
             continue
         }
-        
+
         # Apply defaults
         set core $item
         if {![dict exists $core lib]} {
@@ -535,10 +535,10 @@ proc ::lm::yaml::get_ip_cores {Y} {
         if {![dict exists $core module]} {
             dict set core module ""
         }
-        
+
         lappend cores $core
     }
-    
+
     return $cores
 }
 

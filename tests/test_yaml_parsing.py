@@ -24,7 +24,7 @@ def test_read_yaml_returns_dict():
     """Load real config/project.yaml and verify it returns a dict with project_name."""
     cfg_path = Path(__file__).parent.parent / "aurig_build" / "config" / "project.yaml"
     result = read_yaml(cfg_path)
-    
+
     assert isinstance(result, dict)
     assert "project_name" in result
     assert result["project_name"]  # Not empty
@@ -33,7 +33,7 @@ def test_read_yaml_returns_dict():
 def test_read_yaml_missing_file():
     """Verify FileNotFoundError or equivalent when file does not exist."""
     nonexistent = Path("/nonexistent/path/to/config.yaml")
-    
+
     with pytest.raises((FileNotFoundError, OSError)):
         read_yaml(nonexistent)
 
@@ -42,9 +42,9 @@ def test_read_yaml_empty_file(tmp_path):
     """Verify empty YAML file returns empty dict, not None or error."""
     empty_yaml = tmp_path / "empty.yaml"
     empty_yaml.write_text("")
-    
+
     result = read_yaml(empty_yaml)
-    
+
     # PyYAML returns None for an empty file; read_yaml normalizes that to
     # {} via _validate_top_level_mapping.
     assert result == {}
@@ -319,10 +319,10 @@ def test_synth_kind_quartus(minimal_yaml_quartus):
 def test_missing_tool_synth():
     """Verify synth_kind resolves to empty string when tool key is missing."""
     cfg = {"project_name": "test"}
-    
+
     # Simulate the extraction logic from run.py main()
     synth_kind = ((cfg.get("tool") or {}).get("synth") or {}).get("kind", "")
-    
+
     assert synth_kind == ""
 
 
@@ -368,7 +368,7 @@ def test_board_xdc_files_list(minimal_yaml_vivado):
 def test_board_no_dangling_list(tmp_path):
     """
     Regression test: verify commented xdc_files key doesn't leave dangling list items.
-    
+
     Bug: If 'xdc_files:' is commented but list items remain, PyYAML parses
     board as a list instead of a dict.
     """
@@ -382,9 +382,9 @@ board:
 """
     yaml_file = tmp_path / "bad.yaml"
     yaml_file.write_text(bad_yaml_content)
-    
+
     result = read_yaml(yaml_file)
-    
+
     # board should be a dict, not a list
     assert isinstance(result.get("board"), list), \
         "This test expects the bug to manifest (board parsed as list). " \

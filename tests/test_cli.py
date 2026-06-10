@@ -27,10 +27,10 @@ from aurig_build.run import main
 def test_target_choices_valid(target, tmp_project, monkeypatch):
     """Verify all valid targets parse cleanly without error."""
     yaml_path = tmp_project / "config" / "project.yaml"
-    
+
     # Mock sys.argv
     monkeypatch.setattr(sys, "argv", ["run.py", target, "--cfg", str(yaml_path), "--noenv"])
-    
+
     # Mock builder functions and prepare_env
     with patch("aurig_build.run.vivado_build", return_value=0), \
          patch("aurig_build.run.quartus_build", return_value=0), \
@@ -39,7 +39,7 @@ def test_target_choices_valid(target, tmp_project, monkeypatch):
          patch("aurig_build.run.sim_questa", return_value=0), \
          patch("aurig_build.run.sim_xsim", return_value=0), \
          patch("aurig_build.run.prepare_env", return_value=os.environ.copy()):
-        
+
         # For sim target, we need tool.sim.kind configured
         if target == "sim":
             # Read and modify the YAML to add sim tool
@@ -48,7 +48,7 @@ def test_target_choices_valid(target, tmp_project, monkeypatch):
             cfg["tool"]["sim"] = {"kind": "vunit"}
             with open(yaml_path, "w") as f:
                 yaml.dump(cfg, f)
-        
+
         # Should not raise
         result = main()
         assert result in (0, None)  # Success
@@ -93,12 +93,12 @@ def test_cfg_default(monkeypatch, tmp_path):
     }
     with open(default_cfg, "w") as f:
         yaml.dump(minimal_cfg, f)
-    
+
     # Mock SELF_DIR to point to our tmp aurig_build folder
     monkeypatch.setattr("aurig_build.run.SELF_DIR", tmp_path / "aurig_build")
     monkeypatch.setattr("aurig_build.run.DEFAULT_CFG", default_cfg)
     monkeypatch.setattr(sys, "argv", ["run.py", "synth", "--noenv"])
-    
+
     with patch("aurig_build.run.vivado_build", return_value=0), \
          patch("aurig_build.run.prepare_env", return_value=os.environ.copy()):
         result = main()
@@ -119,9 +119,9 @@ def test_cfg_override(tmp_path, monkeypatch):
     }
     with open(custom_yaml, "w") as f:
         yaml.dump(cfg, f)
-    
+
     monkeypatch.setattr(sys, "argv", ["run.py", "synth", "--cfg", str(custom_yaml), "--noenv"])
-    
+
     with patch("aurig_build.run.vivado_build", return_value=0) as mock_build, \
          patch("aurig_build.run.prepare_env", return_value=os.environ.copy()):
         main()
@@ -141,16 +141,16 @@ def test_cfg_override(tmp_path, monkeypatch):
 def test_dispatch_vivado(tmp_project, monkeypatch):
     """Verify target=synth with kind=vivado routes to vivado_build only."""
     yaml_path = tmp_project / "config" / "project.yaml"
-    
+
     monkeypatch.setattr(sys, "argv", ["run.py", "synth", "--cfg", str(yaml_path), "--noenv"])
-    
+
     with patch("aurig_build.run.vivado_build", return_value=0) as mock_vivado, \
          patch("aurig_build.run.quartus_build", return_value=0) as mock_quartus, \
          patch("aurig_build.run.diamond_build", return_value=0) as mock_diamond, \
          patch("aurig_build.run.prepare_env", return_value=os.environ.copy()):
-        
+
         result = main()
-        
+
         mock_vivado.assert_called_once()
         mock_quartus.assert_not_called()
         mock_diamond.assert_not_called()
@@ -164,16 +164,16 @@ def test_dispatch_quartus(tmp_path, monkeypatch, minimal_yaml_quartus):
     yaml_path = tmp_path / "config" / "project.yaml"
     with open(yaml_path, "w") as f:
         yaml.dump(minimal_yaml_quartus, f)
-    
+
     monkeypatch.setattr(sys, "argv", ["run.py", "synth", "--cfg", str(yaml_path), "--noenv"])
-    
+
     with patch("aurig_build.run.vivado_build", return_value=0) as mock_vivado, \
          patch("aurig_build.run.quartus_build", return_value=0) as mock_quartus, \
          patch("aurig_build.run.diamond_build", return_value=0) as mock_diamond, \
          patch("aurig_build.run.prepare_env", return_value=os.environ.copy()):
-        
+
         result = main()
-        
+
         mock_quartus.assert_called_once()
         mock_vivado.assert_not_called()
         mock_diamond.assert_not_called()
@@ -187,16 +187,16 @@ def test_dispatch_diamond(tmp_path, monkeypatch, minimal_yaml_diamond):
     yaml_path = tmp_path / "config" / "project.yaml"
     with open(yaml_path, "w") as f:
         yaml.dump(minimal_yaml_diamond, f)
-    
+
     monkeypatch.setattr(sys, "argv", ["run.py", "synth", "--cfg", str(yaml_path), "--noenv"])
-    
+
     with patch("aurig_build.run.vivado_build", return_value=0) as mock_vivado, \
          patch("aurig_build.run.quartus_build", return_value=0) as mock_quartus, \
          patch("aurig_build.run.diamond_build", return_value=0) as mock_diamond, \
          patch("aurig_build.run.prepare_env", return_value=os.environ.copy()):
-        
+
         result = main()
-        
+
         mock_diamond.assert_called_once()
         mock_vivado.assert_not_called()
         mock_quartus.assert_not_called()
@@ -216,9 +216,9 @@ def test_dispatch_unknown_tool_exits(tmp_path, monkeypatch):
     yaml_path = tmp_path / "bad.yaml"
     with open(yaml_path, "w") as f:
         yaml.dump(bad_cfg, f)
-    
+
     monkeypatch.setattr(sys, "argv", ["run.py", "synth", "--cfg", str(yaml_path), "--noenv"])
-    
+
     with patch("aurig_build.run.prepare_env", return_value=os.environ.copy()):
         result = main()
         assert result == 2  # Error exit code
@@ -227,10 +227,10 @@ def test_dispatch_unknown_tool_exits(tmp_path, monkeypatch):
 def test_dispatch_sim_missing_kind_exits(tmp_project, monkeypatch):
     """Verify target=sim without tool.sim.kind prints error and returns 2."""
     yaml_path = tmp_project / "config" / "project.yaml"
-    
+
     # Default tmp_project has no tool.sim configured
     monkeypatch.setattr(sys, "argv", ["run.py", "sim", "--cfg", str(yaml_path), "--noenv"])
-    
+
     with patch("aurig_build.run.prepare_env", return_value=os.environ.copy()):
         result = main()
         assert result == 2
@@ -243,14 +243,14 @@ def test_dispatch_sim_missing_kind_exits(tmp_project, monkeypatch):
 def test_noenv_skips_prepare_env(tmp_project, monkeypatch):
     """Verify --noenv flag prevents prepare_env from being called."""
     yaml_path = tmp_project / "config" / "project.yaml"
-    
+
     monkeypatch.setattr(sys, "argv", ["run.py", "synth", "--cfg", str(yaml_path), "--noenv"])
-    
+
     with patch("aurig_build.run.vivado_build", return_value=0), \
          patch("aurig_build.run.prepare_env", return_value=os.environ.copy()) as mock_prepare:
-        
+
         result = main()
-        
+
         # prepare_env should NOT be called when --noenv is set
         mock_prepare.assert_not_called()
         assert result == 0

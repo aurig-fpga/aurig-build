@@ -240,7 +240,7 @@ def tmp_project_diamond(tmp_path, minimal_yaml_diamond):
 def patch_subprocess():
     """
     Patch subprocess.call and subprocess.check_output to prevent real tool invocation.
-    
+
     Not autouse to allow explicit override in integration tests.
     Raises AssertionError if actually called.
     """
@@ -249,13 +249,13 @@ def patch_subprocess():
             f"subprocess.call invoked with args={args}, kwargs={kwargs}. "
             "Real FPGA tools should not be called in unit tests."
         )
-    
+
     def _check_output_guard(*args, **kwargs):
         raise AssertionError(
             f"subprocess.check_output invoked with args={args}, kwargs={kwargs}. "
             "Real FPGA tools should not be called in unit tests."
         )
-    
+
     with patch("subprocess.call", side_effect=_call_guard), \
          patch("subprocess.check_output", side_effect=_check_output_guard):
         yield

@@ -78,17 +78,17 @@ def test_none_equivalent_empty():
 def test_project_root_relative(tmp_project):
     """Verify relative project_root resolves correctly from config file location."""
     yaml_path = tmp_project / "config" / "project.yaml"
-    
+
     # The fixture sets project_root: ".."
     # Relative to config/, that should resolve to tmp_project root
-    
+
     # Simulate resolution: config file dir is tmp_project/config
     cfg_dir = yaml_path.parent
     project_root_relative = ".."
-    
+
     # Resolve relative to cfg_dir
     resolved = (cfg_dir / project_root_relative).resolve()
-    
+
     assert resolved == tmp_project.resolve()
     assert resolved.exists()
 
@@ -97,10 +97,10 @@ def test_project_root_absolute(tmp_path):
     """Verify absolute project_root is used as-is."""
     absolute_root = tmp_path / "myproject"
     absolute_root.mkdir()
-    
+
     # Simulate resolution
     resolved = Path(str(absolute_root)).resolve()
-    
+
     assert resolved == absolute_root.resolve()
 
 
@@ -116,17 +116,17 @@ def test_env_script_linux_selection(monkeypatch, minimal_yaml_vivado):
         "linux": "/opt/Xilinx/Vivado/2023.1/settings64.sh",
         "windows": "C:/Xilinx/Vivado/2023.1/settings64.bat",
     }
-    
+
     # Mock platform.system to return Linux
     monkeypatch.setattr("platform.system", lambda: "Linux")
-    
+
     # Simulate the selection logic (from prepare_env or similar)
     from aurig_build.run import on_windows
     if not on_windows():
         selected = cfg["tool"]["synth"]["env_script"]["linux"]
     else:
         selected = cfg["tool"]["synth"]["env_script"]["windows"]
-    
+
     # Since we mocked platform.system but on_windows might cache, just verify structure
     assert cfg["tool"]["synth"]["env_script"]["linux"].endswith(".sh")
     assert cfg["tool"]["synth"]["env_script"]["windows"].endswith(".bat")
@@ -139,10 +139,10 @@ def test_env_script_windows_selection(monkeypatch, minimal_yaml_vivado):
         "linux": "/opt/Xilinx/Vivado/2023.1/settings64.sh",
         "windows": "C:/Xilinx/Vivado/2023.1/settings64.bat",
     }
-    
+
     # Mock platform.system to return Windows
     monkeypatch.setattr("platform.system", lambda: "Windows")
-    
+
     # Verify structure exists
     assert cfg["tool"]["synth"]["env_script"]["windows"].endswith(".bat")
     assert cfg["tool"]["synth"]["env_script"]["linux"].endswith(".sh")
