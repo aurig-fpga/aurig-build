@@ -9,3 +9,27 @@ bugs and feature requests.
 
 - Maintainer: LogiMentor S.r.l.
 - License: Apache 2.0 (see LICENSE)
+
+## Development setup
+
+Install pre-commit hooks (required for contributors):
+
+```bash
+pip install pre-commit
+pre-commit install
+pre-commit install --hook-type commit-msg
+```
+
+Pre-commit hooks enforce:
+
+- No AI co-author trailers in commit messages
+- No staging-only files (`BRIEF.md`, `MIGRATION.md`, etc.)
+- No private keys or secrets in committed content
+- YAML/TOML syntax validity
+- Standard hygiene (trailing whitespace, end-of-file, line endings)
+
+Run all checks manually:
+
+```bash
+pre-commit run --all-files
+```

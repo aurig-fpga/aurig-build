@@ -25,24 +25,24 @@ from aurig_build.run import main
 def test_vivado_project_cmd_shape(tmp_project, monkeypatch):
     """Verify vivado project target generates correct command shape."""
     yaml_path = tmp_project / "config" / "project.yaml"
-    
+
     monkeypatch.setattr(sys, "argv", [
         "run.py", "project",
         "--cfg", str(yaml_path),
         "--noenv"
     ])
-    
+
     # Mock shutil.which to pretend vivado exists
     with patch("shutil.which", return_value="/usr/bin/vivado"), \
          patch("subprocess.call", return_value=0) as mock_call:
         result = main()
-        
+
         # Should have been called once
         assert mock_call.call_count == 1
-        
+
         # Get the command that was called
         cmd = mock_call.call_args[0][0]
-        
+
         # Verify command shape
         assert any("vivado" in str(arg).lower() for arg in cmd), \
             f"Expected 'vivado' in command, got: {cmd}"
@@ -50,27 +50,27 @@ def test_vivado_project_cmd_shape(tmp_project, monkeypatch):
             f"Expected 'build.tcl' in command, got: {cmd}"
         assert "project" in cmd, \
             f"Expected 'project' action in command, got: {cmd}"
-        
+
         assert result == 0
 
 
 def test_vivado_synth_cmd_shape(tmp_project, monkeypatch):
     """Verify vivado synth target generates correct command shape."""
     yaml_path = tmp_project / "config" / "project.yaml"
-    
+
     monkeypatch.setattr(sys, "argv", [
         "run.py", "synth",
         "--cfg", str(yaml_path),
         "--noenv"
     ])
-    
+
     with patch("shutil.which", return_value="/usr/bin/vivado"), \
          patch("subprocess.call", return_value=0) as mock_call:
         result = main()
-        
+
         assert mock_call.call_count == 1
         cmd = mock_call.call_args[0][0]
-        
+
         assert any("vivado" in str(arg).lower() for arg in cmd)
         assert any("build.tcl" in str(arg) for arg in cmd)
         assert "synth" in cmd
@@ -80,20 +80,20 @@ def test_vivado_synth_cmd_shape(tmp_project, monkeypatch):
 def test_vivado_bit_cmd_shape(tmp_project, monkeypatch):
     """Verify vivado bit target generates correct command shape."""
     yaml_path = tmp_project / "config" / "project.yaml"
-    
+
     monkeypatch.setattr(sys, "argv", [
         "run.py", "bit",
         "--cfg", str(yaml_path),
         "--noenv"
     ])
-    
+
     with patch("shutil.which", return_value="/usr/bin/vivado"), \
          patch("subprocess.call", return_value=0) as mock_call:
         result = main()
-        
+
         assert mock_call.call_count == 1
         cmd = mock_call.call_args[0][0]
-        
+
         assert any("vivado" in str(arg).lower() for arg in cmd)
         assert any("build.tcl" in str(arg) for arg in cmd)
         assert "bit" in cmd
@@ -111,26 +111,26 @@ def test_diamond_project_cmd_shape(tmp_path, monkeypatch, minimal_yaml_diamond):
     yaml_path = tmp_path / "config" / "project.yaml"
     with open(yaml_path, "w") as f:
         yaml.dump(minimal_yaml_diamond, f)
-    
+
     # Create minimal source structure
     (tmp_path / "src").mkdir()
     (tmp_path / "src" / "top.vhd").write_text("entity test_top is end entity;")
     (tmp_path / "constraints").mkdir()
     (tmp_path / "constraints" / "pins.lpf").write_text("# LPF placeholder")
-    
+
     monkeypatch.setattr(sys, "argv", [
         "run.py", "project",
         "--cfg", str(yaml_path),
         "--noenv"
     ])
-    
+
     with patch("shutil.which", return_value="/usr/bin/pnmainc"), \
          patch("subprocess.call", return_value=0) as mock_call:
         result = main()
-        
+
         assert mock_call.call_count == 1
         cmd = mock_call.call_args[0][0]
-        
+
         # Diamond uses pnmainc executable
         assert any("pnmainc" in str(arg).lower() for arg in cmd), \
             f"Expected 'pnmainc' in command, got: {cmd}"
@@ -1109,13 +1109,13 @@ def test_no_real_subprocess_called_without_noenv(tmp_project, monkeypatch):
     --noenv is NOT specified, even though prepare_env tries to source scripts.
     """
     yaml_path = tmp_project / "config" / "project.yaml"
-    
+
     monkeypatch.setattr(sys, "argv", [
         "run.py", "synth",
         "--cfg", str(yaml_path),
         # NO --noenv flag
     ])
-    
+
     # Mock _source_script_into_env to avoid actual script sourcing
     # Also mock shutil.which and version checking (Vivado uses _vivado_version_via_tcl)
     import os
@@ -1123,9 +1123,9 @@ def test_no_real_subprocess_called_without_noenv(tmp_project, monkeypatch):
          patch("aurig_build.run._vivado_version_via_tcl", return_value="2023.1"), \
          patch("shutil.which", return_value="/usr/bin/vivado"), \
          patch("subprocess.call", return_value=0) as mock_call:
-        
+
         result = main()
-        
+
         # Should call subprocess.call exactly once (for the build command)
         assert mock_call.call_count == 1
         assert result == 0
@@ -1139,20 +1139,20 @@ def test_no_real_subprocess_called_without_noenv(tmp_project, monkeypatch):
 def test_vivado_multi_target_integration(target, tmp_project, monkeypatch):
     """Verify multiple targets work end-to-end with mocked subprocess."""
     yaml_path = tmp_project / "config" / "project.yaml"
-    
+
     monkeypatch.setattr(sys, "argv", [
         "run.py", target,
         "--cfg", str(yaml_path),
         "--noenv"
     ])
-    
+
     with patch("shutil.which", return_value="/usr/bin/vivado"), \
          patch("subprocess.call", return_value=0) as mock_call:
         result = main()
-        
+
         assert mock_call.call_count == 1
         cmd = mock_call.call_args[0][0]
-        
+
         # Verify target is passed correctly
         assert target in cmd
         assert result == 0

@@ -26,10 +26,10 @@ def main():
     # Root is the parent of the tests/ directory
     root = Path(__file__).parent.parent
     all_good = True
-    
+
     print("aurig-build Test Suite Structure Validation")
     print("=" * 70)
-    
+
     # Core test files
     test_files = [
         ("tests/conftest.py", "Shared fixtures"),
@@ -40,17 +40,17 @@ def main():
         ("tests/test_integration.py", "Integration tests"),
         ("tests/smoke/test_smoke_vivado.py", "Smoke tests"),
     ]
-    
+
     print("\nTest Files:")
     for file, desc in test_files:
         all_good &= check_file_exists(root / file, desc)
-    
+
     # Configuration files
     print("\nConfiguration:")
     all_good &= check_file_exists(root / "pytest.ini", "Pytest config")
     all_good &= check_file_exists(root / "requirements-test.txt", "Test requirements")
     all_good &= check_file_exists(root / "tests/README.md", "Test documentation")
-    
+
     # Check test function count by reading files
     print("\nTest Function Counts:")
     for file, desc in test_files:
@@ -59,7 +59,7 @@ def main():
             content = path.read_text()
             count = content.count("def test_")
             print(f"  {path.name}: {count} test functions")
-    
+
     print("\n" + "=" * 70)
     if all_good:
         print("✓ All test files present!")
@@ -70,7 +70,7 @@ def main():
     else:
         print("✗ Some files are missing!")
         return 1
-    
+
     return 0
 
 

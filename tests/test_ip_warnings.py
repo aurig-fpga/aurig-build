@@ -43,9 +43,9 @@ def test_xci_with_diamond_warns():
             {"kind": "xci", "src": "ip/core.xci"}
         ]
     }
-    
+
     stderr = capture_stderr(validate_ip_cores, cfg, "diamond")
-    
+
     assert "[WARN]" in stderr
     assert "xci" in stderr.lower()
     assert "vivado" in stderr.lower() or "Vivado" in stderr
@@ -58,9 +58,9 @@ def test_bd_with_quartus_warns():
             {"kind": "bd", "src": "ip/design.bd"}
         ]
     }
-    
+
     stderr = capture_stderr(validate_ip_cores, cfg, "quartus")
-    
+
     assert "[WARN]" in stderr
     assert "bd" in stderr.lower()
     assert "vivado" in stderr.lower() or "Vivado" in stderr
@@ -73,9 +73,9 @@ def test_qip_with_vivado_warns():
             {"kind": "qip", "src": "ip/fifo.qip"}
         ]
     }
-    
+
     stderr = capture_stderr(validate_ip_cores, cfg, "vivado")
-    
+
     assert "[WARN]" in stderr
     assert "qip" in stderr.lower()
     assert "quartus" in stderr.lower() or "Quartus" in stderr
@@ -88,9 +88,9 @@ def test_ipx_with_vivado_warns():
             {"kind": "ipx", "src": "ip/pll.ipx"}
         ]
     }
-    
+
     stderr = capture_stderr(validate_ip_cores, cfg, "vivado")
-    
+
     assert "[WARN]" in stderr
     assert "ipx" in stderr.lower()
     assert "diamond" in stderr.lower() or "Diamond" in stderr
@@ -103,9 +103,9 @@ def test_lpc_with_vivado_warns():
             {"kind": "lpc", "src": "ip/fifo.lpc"}
         ]
     }
-    
+
     stderr = capture_stderr(validate_ip_cores, cfg, "vivado")
-    
+
     assert "[WARN]" in stderr
     assert "lpc" in stderr.lower()
     assert "diamond" in stderr.lower() or "Diamond" in stderr
@@ -118,7 +118,7 @@ def test_edf_is_always_valid():
             {"kind": "edf", "src": "ip/netlist.edf"}
         ]
     }
-    
+
     for tool in ["vivado", "quartus", "diamond"]:
         stderr = capture_stderr(validate_ip_cores, cfg, tool)
         assert "[WARN]" not in stderr or "edf" not in stderr.lower()
@@ -127,9 +127,9 @@ def test_edf_is_always_valid():
 def test_no_ip_cores_no_warning():
     """Verify missing ip_cores key generates no warnings."""
     cfg = {}
-    
+
     stderr = capture_stderr(validate_ip_cores, cfg, "vivado")
-    
+
     # Should be silent (or may have other warnings, but not IP-related)
     assert stderr == "" or "ip_cores" not in stderr.lower()
 
@@ -142,9 +142,9 @@ def test_multiple_mixed_warns_once_per_core():
             {"kind": "bd", "src": "ip/design.bd"},
         ]
     }
-    
+
     stderr = capture_stderr(validate_ip_cores, cfg, "diamond")
-    
+
     # Should have two [WARN] lines
     warn_count = stderr.count("[WARN]")
     assert warn_count >= 2, f"Expected at least 2 warnings, got {warn_count}"
@@ -157,7 +157,7 @@ def test_validate_ip_cores_never_raises():
             {"kind": "unknown_format", "src": "ip/bad.xyz"}
         ]
     }
-    
+
     # Should not raise regardless of bad data
     try:
         validate_ip_cores(cfg, "vivado")

@@ -134,7 +134,7 @@ proc diamond_populate {build_dir name impl top vhdl_by_lib v_by_lib sv_by_lib co
     puts "current working directory: [pwd]"
     foreach {lib lst} $vhdl_by_lib {
         puts "adding VHDL file $lst in library $lib"
-        prj_add_files $impl $lib $lst 
+        prj_add_files $impl $lib $lst
     }
     foreach {lib lst} $v_by_lib   { prj_add_files $impl $lib $lst }
     foreach {lib lst} $sv_by_lib  { prj_add_files $impl $lib $lst }

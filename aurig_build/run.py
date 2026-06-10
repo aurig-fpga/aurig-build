@@ -824,7 +824,7 @@ def vivado_build(action: str, cfg_path: Path, env: dict, cfg: dict) -> int:
 
     return run(cmd, env=env)
 
-# 
+#
 def quartus_build(action: str, cfg_path: Path, env: dict, cfg: dict) -> int:
     """
     Launch Quartus non-project flow using an absolute path to quartus_sh.
@@ -1023,17 +1023,17 @@ def validate_ip_cores(cfg: dict, synth_kind: str) -> None:
     ip_cores = cfg.get("ip_cores", [])
     if not ip_cores:
         return
-    
+
     # Vendor-specific IP kinds
     vivado_kinds = {"xci", "bd"}
     diamond_kinds = {"ipx", "lpc"}
     quartus_kinds = {"qip"}
     generic_kinds = {"edf"}  # works everywhere
-    
+
     for core in ip_cores:
         kind = core.get("kind", "")
         src = core.get("src", "")
-        
+
         # Check compatibility
         if kind in vivado_kinds and synth_kind != "vivado":
             print(f"[WARN] IP core {src} uses Vivado-specific format '{kind}' but tool is '{synth_kind}'", file=sys.stderr)

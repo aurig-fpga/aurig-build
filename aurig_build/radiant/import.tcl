@@ -83,7 +83,7 @@ proc write_rdf {workdir name impl top device vhdl_files v_files sv_files other} 
     if {[file exists "${name}.rdf"]} { file delete -force "${name}.rdf" }
     prj_create -force "${name}.rdf"
     prj_add_impl $impl
-    prj_set_impl_opt -impl $impl top $top         ;# Radiant top setter 
+    prj_set_impl_opt -impl $impl top $top         ;# Radiant top setter
     prj_set_device -impl $impl $device
     foreach f $vhdl_files { prj_add_source $f -lib work }
     foreach f $v_files    { prj_add_source $f }

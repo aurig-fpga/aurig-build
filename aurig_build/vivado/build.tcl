@@ -297,7 +297,7 @@ foreach core $ip_cores {
         log "Add IP ($kind): $ip_path"
         add_files -fileset $src_fs $ip_path
         incr added_ips
-        
+
         # Generate targets if requested (default: true for xci/bd)
         if {$gen eq "true" || $gen == 1} {
             log "Generating IP targets: $ip_path"

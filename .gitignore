@@ -135,3 +135,22 @@ STATUS.md
 # Internal staging documents, not for public repo
 BRIEF.md
 MIGRATION.md
+
+# ============================================================================
+# Model A safety net (public repo is source of truth)
+# ============================================================================
+# Agent / assistant working dirs
+.transition/
+.codex/
+
+# Additional staging docs (also enforced by scripts/check-no-staging-files.sh)
+MIGRATION_STATE.md
+AURIG_PLAN.md
+docs/ISSUE_*_PLAN.md
+
+# Bare per-machine smoke config (the tests/smoke/ path is ignored above;
+# this also catches a stray copy dropped at repo root)
+local_config.yaml
+
+# Pre-commit cache
+.pre-commit-cache/
