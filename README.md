@@ -56,6 +56,8 @@ Drop a `config/project.yaml` in your project root. A minimal Vivado
 configuration:
 
 ```yaml
+
+schema_version: 1 
 project_name: demo_top
 project_root: ..
 top: demo_top
