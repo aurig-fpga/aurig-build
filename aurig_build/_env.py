@@ -18,10 +18,15 @@ def debug_enabled() -> bool:
     if os.environ.get("AURIG_BUILD_DEBUG") == "1":
         return True
     if os.environ.get("FPYGA_DEBUG") == "1":
-        warnings.warn(
-            "FPYGA_DEBUG is deprecated; use AURIG_BUILD_DEBUG=1 instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
+        with warnings.catch_warnings():
+            # DeprecationWarning is ignored by default outside of __main__,
+            # so a normal CLI run would otherwise never show this. Force it
+            # to display here without permanently altering global filters.
+            warnings.simplefilter("always", DeprecationWarning)
+            warnings.warn(
+                "FPYGA_DEBUG is deprecated; use AURIG_BUILD_DEBUG=1 instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         return True
     return False
