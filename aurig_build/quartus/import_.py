@@ -313,7 +313,7 @@ def write_qsf(dest_dir: str, name: str, top: str, part: str,
             fh.write(ln.rstrip() + "\n")
     return qsf_path
 
-# ------------- YAML writer (canonical tcl4fpga schema) -------------
+# ------------- YAML writer (canonical manifest-v1) -------------
 def write_yaml_canonical(
     dest_root: str,
     name: str,
