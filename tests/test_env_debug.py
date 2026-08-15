@@ -21,6 +21,16 @@ import pytest
 from aurig_build import _env
 
 
+@pytest.fixture(autouse=True)
+def _reset_warned_once_state():
+    """debug_enabled() only warns once per process (module-level latch).
+    Reset it around every test so tests don't leak state into each other."""
+    previous = _env._warned_fpyga_debug
+    _env._warned_fpyga_debug = False
+    yield
+    _env._warned_fpyga_debug = previous
+
+
 def test_aurig_build_debug_true_no_warning(monkeypatch):
     monkeypatch.setenv("AURIG_BUILD_DEBUG", "1")
     monkeypatch.delenv("FPYGA_DEBUG", raising=False)
@@ -59,3 +69,23 @@ def test_fpyga_debug_warning_visible_under_default_ignore_filter(monkeypatch):
         and "FPYGA_DEBUG is deprecated" in str(w.message)
         for w in caught
     )
+
+
+def test_fpyga_debug_warning_fires_only_once_per_process(monkeypatch):
+    """Issue #8: repeated calls to debug_enabled() within the same process
+    must only emit the FPYGA_DEBUG DeprecationWarning once, not once per
+    call, even though every call still returns True."""
+    monkeypatch.delenv("AURIG_BUILD_DEBUG", raising=False)
+    monkeypatch.setenv("FPYGA_DEBUG", "1")
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always", DeprecationWarning)
+        results = [_env.debug_enabled() for _ in range(5)]
+
+    assert results == [True] * 5
+    fpyga_warnings = [
+        w
+        for w in caught
+        if issubclass(w.category, DeprecationWarning)
+        and "FPYGA_DEBUG is deprecated" in str(w.message)
+    ]
+    assert len(fpyga_warnings) == 1
