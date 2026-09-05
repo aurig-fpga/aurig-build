@@ -327,7 +327,7 @@ def write_yaml_canonical(
     has_ip: bool,
     qpf_path: str = "",
 ) -> str:
-    """Write a canonical aurig-build project YAML aligned with the tcl4fpga shared schema."""
+    """Write a canonical aurig-build project YAML aligned with the manifest-v1 schema."""
     cfgdir = ensure_dir(joinf(dest_root, "config"))
     ypath = joinf(cfgdir, "project.yaml")
 
