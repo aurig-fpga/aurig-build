@@ -254,3 +254,13 @@ def test_noenv_skips_prepare_env(tmp_project, monkeypatch):
         # prepare_env should NOT be called when --noenv is set
         mock_prepare.assert_not_called()
         assert result == 0
+
+def test_help_lists_import_target(monkeypatch, capsys):
+    """C1 regression: --help must advertise the import target."""
+    monkeypatch.setattr(sys, "argv", ["run.py", "--help"])
+
+    with pytest.raises(SystemExit) as exc:
+        main()
+
+    assert exc.value.code == 0
+    assert "import" in capsys.readouterr().out
