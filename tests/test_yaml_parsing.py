@@ -415,3 +415,16 @@ def test_ip_cores_item_has_kind_and_src(yaml_with_ip_cores):
 def test_ip_cores_absent_is_ok(minimal_yaml_vivado):
     """Verify missing ip_cores key does not cause error."""
     assert minimal_yaml_vivado.get("ip_cores") is None
+
+def test_read_yaml_malformed_yaml_exits_cleanly(tmp_path, capsys):
+    """C2: malformed YAML must fail cleanly with exit 2, not a PyYAML traceback."""
+    cfg = tmp_path / "broken_indent.yaml"
+    cfg.write_text("device: [test\n", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as exc_info:
+        read_yaml(cfg)
+
+    assert exc_info.value.code == 2
+    captured = capsys.readouterr()
+    assert "[ERROR]" in captured.err
+    assert "broken_indent.yaml" in captured.err

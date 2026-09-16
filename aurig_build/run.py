@@ -117,8 +117,12 @@ def read_yaml(path: Path) -> dict:
     # Use _validate_top_level_mapping rather than `safe_load(f) or {}`: the
     # latter coerces any falsy YAML value (False, 0, "", []) into {} and
     # would silently bypass the type check we want here.
-    with open(path, "r", encoding="utf-8") as f:
-        cfg = _validate_top_level_mapping(yaml.safe_load(f), path)
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            cfg = _validate_top_level_mapping(yaml.safe_load(f), path)
+    except yaml.YAMLError as exc:
+        print(f"[ERROR] {path}: malformed YAML: {exc}", file=sys.stderr)
+        sys.exit(2)
     overlay_path = _overlay_path_for(path)
     if overlay_path.is_file():
         with open(overlay_path, "r", encoding="utf-8") as f:
