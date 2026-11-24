@@ -110,7 +110,7 @@ def _yaml_str(s: str) -> str:
     escaped = s.replace("\\", "\\\\").replace('"', '\\"')
     return f'"{escaped}"'
 
-# ------------------ YAML writer (canonical tcl4fpga schema) ------------------
+# ------------------ YAML writer (canonical manifest-v1) ------------------
 def write_yaml_lm(dest_root: str,
                   name: str,
                   top: str,
