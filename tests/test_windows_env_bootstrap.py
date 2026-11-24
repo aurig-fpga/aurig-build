@@ -37,6 +37,16 @@ def test_windows_env_bootstrap_keeps_values_out_of_logs(
     monkeypatch.setattr(run, "_which", lambda exe, env: None)
     monkeypatch.setattr(run.tempfile, "tempdir", str(tmp_path))
 
+    named_temporary_file = run.tempfile.NamedTemporaryFile
+
+    def windows_temporary_file(*, newline=None, **kwargs):
+        # Simulate Windows text-mode translation wherever these tests run.
+        if newline is None:
+            newline = "\r\n"
+        return named_temporary_file(newline=newline, **kwargs)
+
+    monkeypatch.setattr(run.tempfile, "NamedTemporaryFile", windows_temporary_file)
+
     def check_output(command, *, text, env):
         assert command[:3] == ["cmd.exe", "/v:off", "/c"]
         assert len(command) == 4
@@ -45,11 +55,8 @@ def test_windows_env_bootstrap_keeps_values_out_of_logs(
         batch = Path(command[3])
         assert batch.suffix == ".bat"
         assert batch != script
-        assert batch.read_text(encoding="utf-8").splitlines() == [
-            "@echo off",
-            f'call "{script}"',
-            "set",
-        ]
+        expected = f'@echo off\r\ncall "{script}"\r\nset\r\n'.encode("utf-8")
+        assert batch.read_bytes() == expected
         if returncode:
             raise CalledProcessError(returncode, command, output=output)
         return output
