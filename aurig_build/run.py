@@ -410,15 +410,15 @@ def _source_script_into_env(env: dict, script_path: str) -> dict:
 
     if on_windows():
         # Use a temp .bat to avoid quoting/&& parsing issues
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".bat", mode="w", encoding="utf-8") as bat:
+        with tempfile.NamedTemporaryFile(
+            delete=False, suffix=".bat", mode="w", encoding="utf-8", newline=""
+        ) as bat:
             bat.write("@echo off\r\n")
             bat.write(f'call "{script_path}"\r\n')
             bat.write("set\r\n")
             bat_path = bat.name
 
         try:
-            # print debug
-            print(f"[DEBUG] Running env script: {bat_path} with env {env}")
             out = subprocess.check_output(["cmd.exe", "/v:off", "/c", bat_path], text=True, env=env)
         except subprocess.CalledProcessError as e:
             print(f"[WARN] Env bootstrap failed via temp .bat: {bat_path}\n{e}", file=sys.stderr)
