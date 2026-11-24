@@ -417,8 +417,6 @@ def _source_script_into_env(env: dict, script_path: str) -> dict:
             bat_path = bat.name
 
         try:
-            # print debug
-            print(f"[DEBUG] Running env script: {bat_path} with env {env}")
             out = subprocess.check_output(["cmd.exe", "/v:off", "/c", bat_path], text=True, env=env)
         except subprocess.CalledProcessError as e:
             print(f"[WARN] Env bootstrap failed via temp .bat: {bat_path}\n{e}", file=sys.stderr)
