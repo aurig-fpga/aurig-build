@@ -1092,7 +1092,7 @@ def main():
 
     ap = argparse.ArgumentParser(prog="aurig-build", description="FPGA Project Automation")
     ap.add_argument("--version", action="version", version=f"aurig-build {__version__}")
-    ap.add_argument("target", choices=["project", "synth", "impl", "bit", "exporthw", "sim"])
+    ap.add_argument("target", choices=["project", "synth", "impl", "bit", "exporthw", "sim", "import"])
     ap.add_argument("--cfg", default=str(DEFAULT_CFG), help=f"Config file (default: aurig_build/config/project.yaml)")
     ap.add_argument("--tool", help="Override synthesis tool kind (vivado|quartus|...)")
     ap.add_argument("--sim",  help="Override simulation tool kind (vunit|questa|xsim)")
